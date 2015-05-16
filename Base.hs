@@ -1,4 +1,5 @@
 module Base where
+import Control.Arrow
 import Data.Array.Unboxed as U
 import Data.List
 
@@ -68,7 +69,7 @@ move p d = let
         }
 
 tupAdd :: (Num a, Num b) => (a,b) -> (a,b) -> (a,b)
-tupAdd (x0,y0) (x1,y1) = (x0+x1,y0+y1)
+tupAdd (x,y) = (+x) *** (+y)
 
 nextPossibles :: Puzzle -> [Puzzle]
 nextPossibles p = map (move p) (movableDirs p)
