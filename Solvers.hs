@@ -26,7 +26,7 @@ aStarWithCount' _ _ [] = Nothing
 aStarWithCount' f n ss = let
     -- next candidate is the phase where (actualcost + estimatedcost) is
     -- minimum
-    ss' = sortBy (compare `on` (\p -> _actualCost p + f (_puz p))) ss
+    ss' = sortBy (compare `on` cost f) ss
     best = head ss'
     nextPuz = nextPossibles $ _puz best
     in
@@ -44,7 +44,7 @@ aStarWithCountIO' _ _ [] = putStrLn "FAIL"
 aStarWithCountIO' f n ss = let
     -- next candidate is the phase where (actualcost + estimatedcost) is
     -- minimum
-    ss' = sortBy (compare `on` (\p -> _actualCost p + f (_puz p))) ss
+    ss' = sortBy (compare `on` cost f) ss
     best = head ss'
     nextPuz = nextPossibles $ _puz best
     in
@@ -68,7 +68,21 @@ aStarWithCountIO' f n ss = let
                     -> aStarWithCountIO' f (n+1) (
                             map (updatePhase best) nextPuz ++ tail ss')
 
+ideStar :: Estimator -> Puzzle -> Maybe (Phase, Int)
+ideStar f p = let
+    iter :: Int -> Int -> [Phase] -> Maybe (Phase,Int)
+    iter steps depth [] = iter steps (depth+1) [Phase p 0]
+    iter steps depth ss =
+        case find (isComplete . _puz) next of
+            Just pu -> Just (pu,steps)
+            Nothing -> iter (steps+1) depth next
+        where
+            next = filter ((<= depth) . cost f) . concatMap nextPhases $ ss
+    in
+        iter 0 1 [Phase p 0]
 
+cost :: Estimator -> Phase -> Int
+cost f p = _actualCost p + f (_puz p)
 
 diffsNum :: Puzzle -> Int
 diffsNum = length . filter (\(x,y)-> y /= 0  && x /= y)
@@ -81,5 +95,8 @@ manHattan = sum . map (\((x0,y0),e) -> let (x1,y1) = (e-1) `divMod` 3
                                       . filter ((/=0) . snd) . assocs . _field
 
 main = do
-    aStarWithCountIO diffsNum $ fromList [0,2,3,1,7,6,5,4,8]
-    aStarWithCountIO manHattan $ fromList [0,2,3,1,7,6,5,4,8]
+    let puz = fromList [0,2,3,1,7,6,5,4,8]
+    aStarWithCountIO diffsNum puz
+    aStarWithCountIO manHattan puz
+    print . ideStar diffsNum $ puz
+    print . ideStar manHattan $ puz
