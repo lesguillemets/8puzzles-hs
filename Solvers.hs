@@ -16,11 +16,12 @@ nextPhases ph = let
 
 
 type SearchStack = [Phase]
+type Estimator = Puzzle -> Int
 
-aStarWithCount :: (Puzzle -> Int) -> Puzzle -> Maybe (Phase,Int)
+aStarWithCount :: Estimator -> Puzzle -> Maybe (Phase,Int)
 aStarWithCount f p = aStarWithCount' f 0 [Phase p 0]
 
-aStarWithCount' :: (Puzzle -> Int) -> Int -> SearchStack -> Maybe (Phase,Int)
+aStarWithCount' :: Estimator -> Int -> SearchStack -> Maybe (Phase,Int)
 aStarWithCount' _ _ [] = Nothing
 aStarWithCount' f n ss = let
     -- next candidate is the phase where (actualcost + estimatedcost) is
@@ -36,9 +37,9 @@ aStarWithCount' f n ss = let
                 -> aStarWithCount' f (n+1) (
                         map (updatePhase best) nextPuz ++ tail ss')
 
-aStarWithCountIO :: (Puzzle -> Int) -> Puzzle -> IO ()
+aStarWithCountIO :: Estimator -> Puzzle -> IO ()
 aStarWithCountIO f p = aStarWithCountIO' f 0 [Phase p 0]
-aStarWithCountIO' :: (Puzzle -> Int) -> Int -> SearchStack -> IO()
+aStarWithCountIO' :: Estimator -> Int -> SearchStack -> IO()
 aStarWithCountIO' _ _ [] = putStrLn "FAIL"
 aStarWithCountIO' f n ss = let
     -- next candidate is the phase where (actualcost + estimatedcost) is
@@ -66,6 +67,8 @@ aStarWithCountIO' f n ss = let
                 Nothing
                     -> aStarWithCountIO' f (n+1) (
                             map (updatePhase best) nextPuz ++ tail ss')
+
+
 
 diffsNum :: Puzzle -> Int
 diffsNum = length . filter (\(x,y)-> y /= 0  && x /= y)
