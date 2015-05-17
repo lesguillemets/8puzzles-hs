@@ -1,19 +1,8 @@
 import Base
+import Estimators
 import Data.Array.Unboxed as U
 import Data.Function
 import Data.List
-
-data Phase = Phase {_puz :: Puzzle, _actualCost :: Int}
-instance Show Phase where
-    show p = unlines ["Phase :", show (_puz p), "cost" ++ show (_actualCost p)]
-updatePhase :: Phase -> Puzzle -> Phase
-updatePhase ph pz = Phase {_puz = pz, _actualCost = _actualCost ph +1}
-nextPhases :: Phase -> [Phase]
-nextPhases ph = let
-    p = _puz ph
-    c = _actualCost ph in
-        map (\pz -> Phase pz (c+1)) . nextPossibles $ p
-
 
 type SearchStack = [Phase]
 type Estimator = Puzzle -> Int
@@ -83,16 +72,6 @@ ideStar f p = let
 
 cost :: Estimator -> Phase -> Int
 cost f p = _actualCost p + f (_puz p)
-
-diffsNum :: Puzzle -> Int
-diffsNum = length . filter (\(x,y)-> y /= 0  && x /= y)
-    . zip [1,2,3,4,5,6,7,8,0] . elems . _field
-
-manHattan :: Puzzle -> Int
-manHattan = sum . map (\((x0,y0),e) -> let (x1,y1) = (e-1) `divMod` 3
-                                   in
-                                      abs (x1-x0) + abs (y1-y0))
-                                      . filter ((/=0) . snd) . assocs . _field
 
 main = do
     let puz = fromList [0,2,3,1,7,6,5,4,8]

@@ -78,6 +78,17 @@ nextPossibles p = map (move p) (movableDirs p)
 isComplete :: Puzzle -> Bool
 isComplete = (== [1,2,3,4,5,6,7,8,0]) . elems . _field
 
+data Phase = Phase {_puz :: Puzzle, _actualCost :: Int}
+instance Show Phase where
+    show p = unlines ["Phase :", show (_puz p), "cost" ++ show (_actualCost p)]
+updatePhase :: Phase -> Puzzle -> Phase
+updatePhase ph pz = Phase {_puz = pz, _actualCost = _actualCost ph +1}
+nextPhases :: Phase -> [Phase]
+nextPhases ph = let
+    p = _puz ph
+    c = _actualCost ph in
+        map (\pz -> Phase pz (c+1)) . nextPossibles $ p
+
 -- main = do
 --     let a = fromList [1,0,3,2,4,5,6,7,8]
 --     print a
