@@ -1,2 +1,6 @@
 *.hi
 *.o
+Base
+Solvers
+Main
+*.txt

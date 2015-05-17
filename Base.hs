@@ -29,6 +29,7 @@ fromList xs = let
                _zloc = (`divMod` size) .  head  $ 0 `elemIndices` xs
                }
 
+
 instance Show Puzzle where
     show = showTable . _field
 
@@ -75,11 +76,12 @@ nextPossibles :: Puzzle -> [Puzzle]
 nextPossibles p = map (move p) (movableDirs p)
 
 isComplete :: Puzzle -> Bool
-isComplete = (== [1,2,3,4,5,6,7,8,9,0]) . elems . _field
+isComplete = (== [1,2,3,4,5,6,7,8,0]) . elems . _field
 
-main = do
-    let a = fromList [1,0,3,2,4,5,6,7,8]
-    print a
-    print $ _zloc a
-    print $ movableDirs a
-    print $ move a Dw
+-- main = do
+--     let a = fromList [1,0,3,2,4,5,6,7,8]
+--     print a
+--     print $ _zloc a
+--     print $ movableDirs a
+--     print $ move a Dw
+--     print $ elems . _field $ a
