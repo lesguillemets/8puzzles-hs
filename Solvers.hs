@@ -49,8 +49,11 @@ aStarWithCountIO' f n ss = let
     in
         do
             mapM_ (\puz -> do
-                        print $ _puz puz
-                        print $ _actualCost puz + f (_puz puz)) ss'
+                        putStr . show $ _puz puz
+                        print $ _actualCost puz + f (_puz puz)
+                        putStrLn ""
+                        ) ss'
+            putStr " actual costs:"
             print $ map _actualCost ss'
             putStrLn " best is "
             print best
