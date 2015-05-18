@@ -57,8 +57,8 @@ aStarWithCountIO' f n ss = let
                     -> aStarWithCountIO' f (n+1) (
                             map (updatePhase best) nextPuz ++ tail ss')
 
-ideStar :: Estimator -> Puzzle -> Maybe (Phase, Int)
-ideStar f p = let
+idaStar :: Estimator -> Puzzle -> Maybe (Phase, Int)
+idaStar f p = let
     iter :: Int -> Int -> [Phase] -> Maybe (Phase,Int)
     iter steps depth [] = iter steps (depth+1) [Phase p 0]
     iter steps depth ss =
@@ -77,5 +77,5 @@ main = do
     let puz = fromList [0,2,3,1,7,6,5,4,8]
     aStarWithCountIO diffsNum puz
     aStarWithCountIO manHattan puz
-    print . ideStar diffsNum $ puz
-    print . ideStar manHattan $ puz
+    print . idaStar diffsNum $ puz
+    print . idaStar manHattan $ puz
